@@ -1,5 +1,6 @@
+import { Link } from "@inertiajs/react";
 import React, { useState, useRef, useEffect } from "react";
-import { RiMenu2Fill, RiArrowDownSLine } from "react-icons/ri";
+import { RiMenu2Fill, RiArrowDownSLine, RiUserFill } from "react-icons/ri";
 
 const Header = ({ toggleSidebar }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -24,17 +25,18 @@ const Header = ({ toggleSidebar }) => {
     }, []);
 
     return (
-        <header className="bg-white shadow-md px-6 py-3 flex items-center justify-between">
+        <header className="bg-white shadow-md px-6 py-3 flex justify-between">
             {/* Sidebar Toggle Button */}
+          <div className="flex items-center">
             <button
                 onClick={toggleSidebar}
                 className="p-2 rounded-full hover:bg-gray-200 flex items-center justify-center"
             >
                 <RiMenu2Fill className="text-2xl text-gray-700" />
             </button>
-
-            {/* Page Title */}
             <h1 className="text-lg font-semibold">Dashboard</h1>
+            </div>
+            {/* Page Title */}
 
             {/* User Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -42,11 +44,7 @@ const Header = ({ toggleSidebar }) => {
                     className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-200"
                     onClick={toggleDropdown}
                 >
-                    <img
-                        src="https://via.placeholder.com/30"
-                        alt="User"
-                        className="w-8 h-8 rounded-full"
-                    />
+                    <RiUserFill className="text-blue-500 text-3xl" />
                     <span>Admin</span>
                     <RiArrowDownSLine className="text-lg" />
                 </button>
@@ -58,7 +56,7 @@ const Header = ({ toggleSidebar }) => {
                             <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                             <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                             <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500">
-                                Logout
+                                <Link rel="stylesheet" href={route('logout')} method="post">Logout</Link>
                             </li>
                         </ul>
                     </div>

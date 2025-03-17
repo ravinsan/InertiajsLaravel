@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class ContactUS extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'status',
-    ];
+    function Reply()
+    {
+        return $this->belongsToMany(ContactUs::class, 'reply_id');
+    }
 }

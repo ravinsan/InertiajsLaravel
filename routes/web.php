@@ -1,5 +1,21 @@
 <?php
 
+use App\Http\Controllers\SuperAdmin\ShortVideoNewsController;
+use App\Http\Controllers\SuperAdmin\LogActivityController;
+use App\Http\Controllers\SuperAdmin\PermissionController;
+use App\Http\Controllers\SuperAdmin\NewsDetailController;
+use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\VideoNewsController;
+use App\Http\Controllers\SuperAdmin\CategoryController;
+use App\Http\Controllers\SuperAdmin\NewsMenuController;
+use App\Http\Controllers\SuperAdmin\UserProfileController;
+use App\Http\Controllers\SuperAdmin\SeoPageController;
+use App\Http\Controllers\SuperAdmin\RegionController;
+use App\Http\Controllers\SuperAdmin\AdminController;
+use App\Http\Controllers\SuperAdmin\RoleController;
+use App\Http\Controllers\SuperAdmin\MenuController;
+use App\Http\Controllers\SuperAdmin\PageController;
+use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use Illuminate\Foundation\Application;
@@ -35,7 +51,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('posts', PostController::class);
+    /* Category */ 
+    Route::resource('categories', CategoryController::class);
+    Route::get('categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
+    Route::get('categories/status/{id}', [CategoryController::class, 'statusChange'])->name('categories.status');
+    Route::get('get-categories', [CategoryController::class,  'getCategory'])->name('category.get');
+    Route::get('get-subcategories', [CategoryController::class,  'getSubCategory'])->name('subcategory.get');
+    Route::get('categories/mega-menu-status/{id}', [CategoryController::class, 'megaMenustatusChange'])->name('categories.mega_menu_status');
+    Route::get('categories/frontend-menu-status/{id}', [CategoryController::class, 'frontendMenustatusChange'])->name('categories.frontend_menu_status');
+    Route::get('categories/page-design-status/{id}', [CategoryController::class, 'PageDesignstatusChange'])->name('categories.page_design_status');
 });
 
 require __DIR__.'/auth.php';
