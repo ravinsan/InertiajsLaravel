@@ -6,7 +6,6 @@ import Image from "@/Components/Image";
 import { IoReturnUpBackSharp } from "react-icons/io5";
 
 const Edit = ({ auth, parentCategory, Category }) => {
-    console.log(Category);
   const { data, setData, post, processing, errors } = useForm({
     _method: 'PUT',
     name: Category.name,

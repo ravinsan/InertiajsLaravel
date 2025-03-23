@@ -8,10 +8,37 @@ use Auth;
 
 class NewsMenuRepository implements NewsMenuInterface{
 
-    public function getAll()
+    public function getAll($data)
     {
-        $records = NewsMenu::with('parent')->orderBy('id', 'desc');
-        $records = $records->get();
+        $records = NewsMenu::with('parent');
+        $sortColumn = !empty($data['sort_column']) ? $data['sort_column'] : 'id';
+        $sortOrder = !empty($data['sort_order']) ? $data['sort_order'] : 'desc';
+
+        $allowedColumns = ['id', 'name', 'parent_id', 'slug', 'order_id', 'status'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'id';
+        }
+
+        // Text search
+        if (array_key_exists('search', $data)) {
+            $records->where(function ($query) use ($data) {
+                $query->where('name', 'like', '%' . $data['search'] . '%');
+                $query->orWhere('slug', 'like', '%' . $data['search'] . '%');
+                $query->orWhereHas('parent', function ($q) use ($data) {
+                    $q->where('name', 'like', '%' . $data['search'] . '%');
+                });
+            });
+        }
+        // Status
+        if (isset($data['status']) && $data['status'] !== 'all') {
+            $records->where('status', $data['status']);
+        }
+        //Mega Menu Status
+        if (isset($data['mega_menu_status']) && $data['mega_menu_status'] !== 'all') {
+            $records->where('mega_menu_status', $data['mega_menu_status']);
+        }
+        $records = $records->orderBy($sortColumn, $sortOrder);
+        $records = $records->paginate($data['per_page']);
 
         return $records;
     }

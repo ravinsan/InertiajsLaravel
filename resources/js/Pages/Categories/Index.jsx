@@ -12,7 +12,10 @@ const Index = ({ categories, auth }) => {
     const { delete: destroy, get } = useForm();
     const [filterText, setFilterText] = useState("");
     const [statusFilter, setStatusFilter] = useState(urlParams.get("status") || "");
-
+    const [megaMegaMenuStatusFilter, setMegaMenuStatusFilter] = useState(urlParams.get("mega_menu_status") || "");
+    const [frontendMenuStatusFilter, setFrontendMenuStatusFilter] = useState(urlParams.get("frontend_menu_status") || "");
+    const [pageDesignStatusFilter, setPageDesignStatusFilter] = useState(urlParams.get("page_design_status") || "");
+    
     const [sortColumn, setSortColumn] = useState(urlParams.get("sort_column") || "id");
     const [sortOrder, setSortOrder] = useState(urlParams.get("sort_order") || "desc");
 
@@ -22,6 +25,39 @@ const Index = ({ categories, auth }) => {
         setStatusFilter(selectedStatus);
         
         get(route("categories.index", { status: selectedStatus }), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Filter Mega Menu Status
+    const handleMegaMenuStatusFilterChange = (e) => {
+        const selectedStatus = e.target.value;
+        setMegaMenuStatusFilter(selectedStatus);
+        
+        get(route("categories.index", { mega_menu_status: selectedStatus }), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Filter Frontend Menu Status
+    const handleFrontendStatusFilterChange = (e) => {
+        const selectedStatus = e.target.value;
+        setFrontendMenuStatusFilter(selectedStatus);
+        
+        get(route("categories.index", { frontend_menu_status: selectedStatus }), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Filter Page design status
+    const handlePageDesignStatusFilterChange = (e) => {
+        const selectedStatus = e.target.value;
+        setPageDesignStatusFilter(selectedStatus);
+        
+        get(route("categories.index", { page_design_status: selectedStatus }), {
             preserveState: true,
             preserveScroll: true,
         });
@@ -185,26 +221,52 @@ const Index = ({ categories, auth }) => {
                     </Link>
                 </div>
 
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                         <input
                             type="text"
                             placeholder="Search..."
-                            className="p-2 border border-gray-300 rounded-lg w-96 focus:ring-2 focus:ring-blue-500"
+                            className="p-2 border border-gray-300 rounded-lg w-full md:w-96 focus:ring-2 focus:ring-blue-500"
                             value={filterText}
                             onChange={handleFilterTextChange}
                         />
                         <select
-                            className="p-2 border border-gray-300 rounded-lg w-48 focus:ring-2 focus:ring-blue-500"
+                            className="p-2 border border-gray-300 rounded-lg w-full md:w-48 focus:ring-2 focus:ring-blue-500"
                             value={statusFilter}
                             onChange={handleStatusFilterChange} 
                         >
-                            <option value="all">All</option>
+                            <option value="all">All Status</option>
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
                         </select>
+                        <select
+                            className="p-2 border border-gray-300 rounded-lg w-full md:w-48 focus:ring-2 focus:ring-blue-500"
+                            value={megaMegaMenuStatusFilter}
+                            onChange={handleMegaMenuStatusFilterChange} 
+                        >
+                            <option value="all">All Mega Status</option>
+                            <option value="1">Enabled</option>
+                            <option value="0">Disabled</option>
+                        </select>
+                        <select
+                            className="p-2 border border-gray-300 rounded-lg w-full md:w-48 focus:ring-2 focus:ring-blue-500"
+                            value={frontendMenuStatusFilter}
+                            onChange={handleFrontendStatusFilterChange} 
+                        >
+                            <option value="all">All Frontend Status</option>
+                            <option value="1">Enabled</option>
+                            <option value="0">Disabled</option>
+                        </select>
+                        <select
+                            className="p-2 border border-gray-300 rounded-lg w-full md:w-48 focus:ring-2 focus:ring-blue-500"
+                            value={pageDesignStatusFilter}
+                            onChange={handlePageDesignStatusFilterChange} 
+                        >
+                            <option value="all">All Page Design Status</option>
+                            <option value="1">Enabled</option>
+                            <option value="0">Disabled</option>
+                        </select>
                     </div>
-                </div>
+
 
                 <div className="overflow-x-auto">
                     <table className="w-full border border-gray-300 rounded-lg shadow-md">

@@ -62,7 +62,6 @@ Route::middleware('auth')->group(function () {
 
     /* News Menu */ 
     Route::resource('news-menus', NewsMenuController::class);
-    Route::get('news-menus/delete/{id}', [NewsMenuController::class, 'destroy'])->name('news-menus.delete');
     Route::get('news-menus/status/{id}', [NewsMenuController::class, 'statusChange'])->name('news-menus.status');
     Route::get('news-menus/mega-menu-status/{id}', [NewsMenuController::class, 'megaMenustatusChange'])->name('news-menus.mega.menu.status');
     Route::get('get-news-menus', [NewsMenuController::class,  'getNewsMenu'])->name('news-menus.get');

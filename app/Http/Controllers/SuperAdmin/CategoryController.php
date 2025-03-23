@@ -32,7 +32,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $data = $request->all();
-        $data['pagen'] = $request->per_page ?? 10;
+        $data['pagen'] = $request->per_page ?? config('cms.pagination.perpage');
         $categories = $this->Category->getAll($data);
         return Inertia::render('Categories/Index', compact('categories'));
     }

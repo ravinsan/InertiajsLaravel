@@ -19,10 +19,8 @@ class CategoryRepository implements CategoryInterface{
         if (!in_array($sortColumn, $allowedColumns)) {
             $sortColumn = 'id';
         }
-        if (!in_array($sortOrder, ['asc', 'desc'])) {
-            $sortOrder = 'desc';
-        }
 
+        // Text search
         if (array_key_exists('search', $data)) {
             $query->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data['search'] . '%');
@@ -32,9 +30,21 @@ class CategoryRepository implements CategoryInterface{
                 });
             });
         }
-
+        // Status
         if (isset($data['status']) && $data['status'] !== 'all') {
             $query->where('status', $data['status']);
+        }
+        //Mega Menu Status
+        if (isset($data['mega_menu_status']) && $data['mega_menu_status'] !== 'all') {
+            $query->where('mega_menu_status', $data['mega_menu_status']);
+        }
+        //Frontend Menu Status
+        if (isset($data['frontend_menu_status']) && $data['frontend_menu_status'] !== 'all') {
+            $query->where('frontend_menu_status', $data['frontend_menu_status']);
+        }
+        // Page Design Status
+        if (isset($data['page_design_status']) && $data['page_design_status'] !== 'all') {
+            $query->where('page_design_status', $data['page_design_status']);
         }
         
         $query->orderBy($sortColumn, $sortOrder);

@@ -27,9 +27,11 @@ class NewsMenuController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $records = $this->NewsMenu->getAll();
+        $data = $request->all();
+        $data['per_page'] = $request->per_page ?? config('cms.pagination.perpage');
+        $records = $this->NewsMenu->getAll($data);
         return Inertia::render('News_menu/Index', compact('records'));
     }
 

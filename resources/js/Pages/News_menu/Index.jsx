@@ -1,29 +1,148 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Head, Link, useForm } from "@inertiajs/react";
+import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Pagination from '@/Components/Pagination';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const Index = ({ auth, records}) => {
   
+    const {delete: destroy, get} = useForm();
+    const urlParams = new URLSearchParams(window.location.search);
+    const [filterText, setFilterText] = useState("");
+    const [statusFilter, setStatusFilter] = useState(urlParams.get("status") || "");
+    const [megaMegaMenuStatusFilter, setMegaMenuStatusFilter] = useState(urlParams.get("mega_menu_status") || "");
+    const [sortColumn, setSortColumn] = useState(urlParams.get("sort_column") || "id");
+    const [sortOrder, setSortOrder] = useState(urlParams.get("sort_order") || "desc");
+
+    // Searching text
+    const handleFilterTextChange = (e) => {
+        const searchText = e.target.value;
+        setFilterText(searchText);
+        get(route("news-menus.index", { search: searchText }), {
+            preserveState: true,
+            preserveScroll: true,
+        })
+    }
+    // Filter Status
+    const handleStatusFilterChange = (e) => {
+        const selectedStatus = e.target.value;
+        setStatusFilter(selectedStatus);
+        
+        get(route("news-menus.index", { status: selectedStatus }), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
+    // Filter Mega Menu Status
+    const handleMegaMenuStatusFilterChange = (e) => {
+        const selectedStatus = e.target.value;
+        setMegaMenuStatusFilter(selectedStatus);
+        
+        get(route("news-menus.index", { mega_menu_status: selectedStatus }), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
+    // Sorting
+    const handleSort = (column) => {
+        const newSortOrder = sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortOrder(newSortOrder);
+        get(route("news-menus.index", { sort_column: column, sort_order: newSortOrder }), {
+            preserveState: true, 
+            preserveScroll: true, 
+        });
+    };
+    // Delete news menu
+    const handleDelete = (id) =>{
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            destroy(route("news-menus.destroy", id), {
+              onSuccess: () => {
+                toast.success("News menu has been successfully deleted");
+                Swal.fire("Deleted!", "News menu has been successfully deleted.", "success");
+              },
+              onError: () => toast.error("Failed to delete news menu. Try again."),
+            });
+          }
+        });
+    }
+    // Status Change
+    const handleMegaMenuStatus = (id) =>{
+             Swal.fire({
+                 title: "Are you sure?",
+                 text: "You won't be able to change this status!",
+                 icon: "warning",
+                 showCancelButton: true,
+                 confirmButtonColor: "#d33",
+                 cancelButtonColor: "#3085d6",
+                 confirmButtonText: "Yes, change it!",
+               }).then((result) => {
+                 if (result.isConfirmed) {
+                   get(route("news-menus.mega.menu.status", id), {
+                     onSuccess: () => {
+                       toast.success("News mega menu status has been successfully changed");
+                       Swal.fire("News mega menu status!", "News mega menu status has been successfully changed.", "success");
+                     },
+                     onError: () => toast.error("Failed to change mews mega menu status. Try again."),
+                   });
+                 }
+               });
+         } 
+
+    // Mega menu Status Change
+    const handleStatusChange = (id) =>{
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to change this status!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, change it!",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              get(route("news-menus.status", id), {
+                onSuccess: () => {
+                  toast.success("News menu status has been successfully changed");
+                  Swal.fire("Status!", "News menu status has been successfully changed.", "success");
+                },
+                onError: () => toast.error("Failed to change mews menu status. Try again."),
+              });
+            }
+          });
+    } 
   return (
     <>
      <AuthenticatedLayout
                  user={auth.user}
                  header={
                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                         Category
+                         News Menu
                      </h2>
                  }
              >
-                 <Head title="Category" />
+                 <Head title="News Menu" />
                  <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6 mt-6 ">
                      <div className="flex justify-between items-center ">
                          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                             Category
+                             News Menu
                          </h3>
                          <Link
-                             href="/categories/create"
+                             href="/news-menus/create"
                              className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                          >
-                             <FaPlus className="mr-2" /> Create Category
+                             <FaPlus className="mr-2" /> Create News Menu
                          </Link>
                      </div>
      
@@ -34,16 +153,25 @@ const Index = ({ auth, records}) => {
                                  placeholder="Search..."
                                  className="p-2 border border-gray-300 rounded-lg w-96 focus:ring-2 focus:ring-blue-500"
                                  value={filterText}
-                                 onChange={(e) => setFilterText(e.target.value)}
+                                 onChange={handleFilterTextChange}
                              />
                              <select
                                  className="p-2 border border-gray-300 rounded-lg w-48 focus:ring-2 focus:ring-blue-500"
                                  value={statusFilter}
-                                 onChange={(e) => setStatusFilter(e.target.value)}
+                                 onChange={handleStatusFilterChange} 
                              >
-                                 <option value="">All</option>
+                                 <option value="all">All Status</option>
                                  <option value="1">Active</option>
                                  <option value="0">Inactive</option>
+                             </select>
+                             <select
+                                 className="p-2 border border-gray-300 rounded-lg w-48 focus:ring-2 focus:ring-blue-500"
+                                 value={megaMegaMenuStatusFilter}
+                                 onChange={handleMegaMenuStatusFilterChange} 
+                             >
+                                 <option value="all">All Mega Menu Status</option>
+                                 <option value="1">Enabled</option>
+                                 <option value="0">Disabled</option>
                              </select>
                          </div>
                      </div>
@@ -60,19 +188,14 @@ const Index = ({ auth, records}) => {
                                          {sortColumn === "id" &&
                                              (sortOrder === "asc" ? "▲" : "▼")}
                                      </th>
-                                     <th
-                                         className="p-2 cursor-pointer"
-                                         onClick={() => handleSort("name")}
-                                     >
-                                         Category Name{" "}
-                                         {sortColumn === "name" &&
-                                             (sortOrder === "asc" ? "▲" : "▼")}
+                                     <th className="p-2 cursor-pointer" onClick={() => handleSort("name")}>
+                                         Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
                                      </th>
                                      <th
                                          className="p-2 cursor-pointer"
                                          onClick={() => handleSort("parent_id")}
                                      >
-                                         Parent Category{" "}
+                                         Parent Menu{" "}
                                          {sortColumn === "parent_id" &&
                                              (sortOrder === "asc" ? "▲" : "▼")}
                                      </th>
@@ -86,22 +209,6 @@ const Index = ({ auth, records}) => {
                                      </th>
                                      <th
                                          className="p-2 cursor-pointer"
-                                         onClick={() => handleSort("order_id")}
-                                     >
-                                         Order Number{" "}
-                                         {sortColumn === "order_id" &&
-                                             (sortOrder === "asc" ? "▲" : "▼")}
-                                     </th>
-                                     <th
-                                         className="p-2 cursor-pointer"
-                                         onClick={() => handleSort("image")}
-                                     >
-                                         Image{" "}
-                                         {sortColumn === "image" &&
-                                             (sortOrder === "asc" ? "▲" : "▼")}
-                                     </th>
-                                     <th
-                                         className="p-2 cursor-pointer"
                                          onClick={() =>
                                              handleSort("mega_menu_status")
                                          }
@@ -110,26 +217,7 @@ const Index = ({ auth, records}) => {
                                          {sortColumn === "mega_menu_status" &&
                                              (sortOrder === "asc" ? "▲" : "▼")}
                                      </th>
-                                     <th
-                                         className="p-2 cursor-pointer"
-                                         onClick={() =>
-                                             handleSort("frontend_menu_status")
-                                         }
-                                     >
-                                         Frontend Menu Status{" "}
-                                         {sortColumn === "frontend_menu_status" &&
-                                             (sortOrder === "asc" ? "▲" : "▼")}
-                                     </th>
-                                     <th
-                                         className="p-2 cursor-pointer"
-                                         onClick={() =>
-                                             handleSort("page_design_status")
-                                         }
-                                     >
-                                         Page Design Status{" "}
-                                         {sortColumn === "page_design_status" &&
-                                             (sortOrder === "asc" ? "▲" : "▼")}
-                                     </th>
+                                     
                                      <th
                                          className="p-2 cursor-pointer"
                                          onClick={() => handleSort("status")}
@@ -150,46 +238,37 @@ const Index = ({ auth, records}) => {
                              </thead>
      
                              <tbody>
-                                 {paginatedCategories.map((category) => (
+                                 {records.data.map((value, index) => (
                                      <tr
-                                         key={category.id}
+                                         key={value.id}
                                          className="border hover:bg-gray-100"
                                      >
                                          <td className="p-1 border whitespace-nowrap">
-                                             {category.id}
+                                             {sortOrder === "desc"
+                                                 ? (records.per_page * (records.current_page - 1)) + index + 1
+                                                 : records.total - ((records.current_page - 1) * records.per_page) - index}
                                          </td>
                                          <td className="p-1 border whitespace-nowrap">
-                                             {category.name}
+                                             {value.name}
                                          </td>
                                          <td className="p-1 border whitespace-nowrap">
-                                             {category.parent
-                                                 ? category.parent.name
+                                             {value.parent
+                                                 ? value.parent.name
                                                  : "N/A"}
                                          </td>
                                          <td className="p-1 border whitespace-nowrap">
-                                             {category.slug}
+                                             {value.slug}
                                          </td>
-                                         <td className="p-1 border whitespace-nowrap">
-                                             {category.order_id}
-                                         </td>
-                                         <td className="p-1 border whitespace-nowrap">
-                                             <img
-                                                 src={`image/${category.image}`}
-                                                 alt={category.name}
-                                                 className="w-12 h-12 object-cover rounded"
-                                             />
-                                         </td>
-     
                                          <td className="p-1 border whitespace-nowrap">
                                              <button
                                                  className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                     category.mega_menu_status
+                                                     value.mega_menu_status
                                                          ? "bg-blue-500 text-white"
                                                          : "bg-gray-300 text-gray-700"
                                                  }`}
-                                                 onClick={() => handleMegaMenuStatus(category.id)}
+                                                 onClick={() => handleMegaMenuStatus(value.id)}
                                              >
-                                                 {category.mega_menu_status
+                                                 {value.mega_menu_status
                                                      ? "Enabled"
                                                      : "Disabled"}
                                              </button>
@@ -198,50 +277,20 @@ const Index = ({ auth, records}) => {
                                          <td className="p-1 border whitespace-nowrap">
                                              <button
                                                  className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                     category.frontend_menu_status
-                                                         ? "bg-green-500 text-white"
-                                                         : "bg-gray-300 text-gray-700"
-                                                 }`}
-                                                 onClick={() => handleFrontendMenuStatus(category.id)}
-                                             >
-                                                 {category.frontend_menu_status
-                                                     ? "Enabled"
-                                                     : "Disabled"}
-                                             </button>
-                                         </td>
-     
-                                         <td className="p-1 border whitespace-nowrap">
-                                             <button
-                                                 className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                     category.page_design_status
-                                                         ? "bg-green-500 text-white"
-                                                         : "bg-gray-300 text-gray-700"
-                                                 }`}
-                                                 onClick={() => handlePageDesignStatus(category.id)}
-                                             >
-                                                 {category.page_design_status
-                                                     ? "Enabled"
-                                                     : "Disabled"}
-                                             </button>
-                                         </td>
-     
-                                         <td className="p-1 border whitespace-nowrap">
-                                             <button
-                                                 className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                     category.status
+                                                     value.status
                                                          ? "bg-green-600 text-white"
                                                          : "bg-red-600 text-white"
                                                  }`}
-                                                 onClick={() => handleStatusChange(category.id)}
+                                                 onClick={() => handleStatusChange(value.id)}
                                              >
-                                                 {category.status
+                                                 {value.status
                                                      ? "Active"
                                                      : "Inactive"}
                                              </button>
                                          </td>
      
                                          <td className="p-1 mt-2 flex gap-2 justify-center whitespace-nowrap">
-                                             <Link href={route('categories.edit', category.id)}
+                                             <Link href={route('news-menus.edit', value.id)}
                                                  className="p-1 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-500 hover:text-white transition duration-300 shadow-sm"
                                                  title="Edit"
                                              >
@@ -250,7 +299,7 @@ const Index = ({ auth, records}) => {
      
                                              <button 
                                                  className="p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
-                                                 onClick={() => handleDelete(category.id)}
+                                                 onClick={() => handleDelete(value.id)}
                                                  title="Delete">
                                                  <FaTrash size={14} />
                                              </button>
@@ -261,28 +310,7 @@ const Index = ({ auth, records}) => {
                          </table>
                      </div>
      
-                     <div className="flex justify-between items-center mt-6">
-                         <button
-                             className="px-4 py-2 bg-gray-400 text-white rounded-lg disabled:opacity-50"
-                             disabled={currentPage === 1}
-                             onClick={() => setCurrentPage(currentPage - 1)}
-                         >
-                             Prev
-                         </button>
-                         <span className="text-lg font-medium">
-                             Page {currentPage}
-                         </span>
-                         <button
-                             className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
-                             disabled={
-                                 currentPage * itemsPerPage >=
-                                 filteredCategories.length
-                             }
-                             onClick={() => setCurrentPage(currentPage + 1)}
-                         >
-                             Next
-                         </button>
-                     </div>
+                     <Pagination data={records} />
                  </div>
              </AuthenticatedLayout>
     </>
