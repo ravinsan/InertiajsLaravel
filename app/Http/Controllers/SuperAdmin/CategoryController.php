@@ -29,9 +29,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = $this->Category->getAll();
+        $data = $request->all();
+        $data['pagen'] = $request->per_page ?? 10;
+        $categories = $this->Category->getAll($data);
         return Inertia::render('Categories/Index', compact('categories'));
     }
 
@@ -54,13 +56,22 @@ class CategoryController extends Controller
         $image = '';
         if($request->hasFile('image')) {
          
-            $filenamewithextension = $request->file('image')->getClientOriginalName();
-            $filename  = pathinfo($filenamewithextension, PATHINFO_FILENAME);
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $newsid    = Category::max('id');       
-            $id        = !empty($newsid) ? $newsid + 1 : 1;
-            $image = uniqid() . '_' . time() . '_' . $id . '.' . $extension;
-            Storage::disk('ftp')->put($image, fopen($request->file('image'), 'r+'));
+            // $filenamewithextension = $request->file('image')->getClientOriginalName();
+            // $filename  = pathinfo($filenamewithextension, PATHINFO_FILENAME);
+            // $extension = $request->file('image')->getClientOriginalExtension();
+            // $newsid    = Category::max('id');       
+            // $id        = !empty($newsid) ? $newsid + 1 : 1;
+            // $image = uniqid() . '_' . time() . '_' . $id . '.' . $extension;
+            // Storage::disk('ftp')->put($image, fopen($request->file('image'), 'r+'));
+            
+            $file = $request->file('image');
+            $filename = $file->getClientOriginalName();
+            $extesion = $file->getClientOriginalExtension();
+            
+                $image = uniqid().$filename;
+                $destinationPath = public_path('image/');
+                $file->move($destinationPath, $image);
+            
         }
         
         $data['image']      = $image;
@@ -87,10 +98,9 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        $categories  = $this->Category->getCategory();
-        
+        $parentCategory  = $this->Category->getCategory();
         $Category = $this->Category->find($id);
-        Inertia::render('Categories/edit', compact('Category', 'categories'));
+        return Inertia::render('Categories/edit', compact('Category', 'parentCategory'));
     }
 
     /**
@@ -103,23 +113,31 @@ class CategoryController extends Controller
     public function update(UpdateCategoryRequest $request, $id)
     {
         $data = $request->all();
-        $image = $imagenull = '';
+         $image = $imagenull = '';
            
             if($request->hasFile('image')) {
          
                 $oldimage = Category::where('id', $id)->value('image');
-                // if(!empty($oldimage))
-                // {
-                //     $arr = explode("/", $oldimage);
-                //     $fullpath = File::delete('image/' . $arr[count($arr) - 1]);
-                //     File::delete($fullpath);
-                // }
+                if(!empty($oldimage))
+                {
+                    $arr = explode("/", $oldimage);
+                    $fullpath = File::delete('image/' . $arr[count($arr) - 1]);
+                    File::delete($fullpath);
+                }
 
-                $filenamewithextension = $request->file('image')->getClientOriginalName();
-                $filename = pathinfo($filenamewithextension, PATHINFO_FILENAME);
-                $extension = $request->file('image')->getClientOriginalExtension();
-                $image = uniqid() . '_' . time() . '_' . $id . '.' . $extension;
-                Storage::disk('ftp')->put($image, fopen($request->file('image'), 'r+'));
+                // $filenamewithextension = $request->file('image')->getClientOriginalName();
+                // $filename = pathinfo($filenamewithextension, PATHINFO_FILENAME);
+                // $extension = $request->file('image')->getClientOriginalExtension();
+                // $image = uniqid() . '_' . time() . '_' . $id . '.' . $extension;
+                // Storage::disk('ftp')->put($image, fopen($request->file('image'), 'r+'));
+
+                $file = $request->file('image');
+                $filename = $file->getClientOriginalName();
+                $extesion = $file->getClientOriginalExtension();
+            
+                $image = uniqid().$filename;
+                $destinationPath = public_path('image/');
+                $file->move($destinationPath, $image);
             }
             else{
                 $imagenull = Category::where('id', $id)->value('image');

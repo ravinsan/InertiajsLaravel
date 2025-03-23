@@ -5,7 +5,7 @@ namespace App\Repository\Category;
 use App\Models\Category;
 
 interface CategoryInterface{
-    public function getAll();
+    public function getAll($data);
     public function store($data);
     public function find($id);
     public function update($data, $id);

@@ -8,12 +8,38 @@ use Auth;
 
 class CategoryRepository implements CategoryInterface{
 
-    public function getAll()
+    public function getAll($data)
     {
-        $records = Category::with(['parent', 'children'])->orderBy('id', 'desc');
-        $records = $records->get();
+        $query = Category::with(['parent', 'children']);
 
-        return $records;
+        $sortColumn = !empty($data['sort_column']) ? $data['sort_column'] : 'id';
+        $sortOrder = !empty($data['sort_order']) ? $data['sort_order'] : 'desc';
+
+        $allowedColumns = ['id', 'name', 'parent_id', 'slug', 'order_id', 'status'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'id';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        if (array_key_exists('search', $data)) {
+            $query->where(function ($query) use ($data) {
+                $query->where('name', 'like', '%' . $data['search'] . '%');
+                $query->orWhere('slug', 'like', '%' . $data['search'] . '%');
+                $query->orWhereHas('parent', function ($q) use ($data) {
+                    $q->where('name', 'like', '%' . $data['search'] . '%');
+                });
+            });
+        }
+
+        if (isset($data['status']) && $data['status'] !== 'all') {
+            $query->where('status', $data['status']);
+        }
+        
+        $query->orderBy($sortColumn, $sortOrder);
+
+        return $query->paginate($data['pagen']);
     }
 
     public function store($data)

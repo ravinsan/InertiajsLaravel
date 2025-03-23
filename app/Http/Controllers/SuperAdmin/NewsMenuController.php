@@ -9,6 +9,7 @@ use App\Repository\NewsMenu\NewsMenuInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\NewsMenu;
+use Inertia\Inertia;
 use Hash;
 use Auth;
 
@@ -29,13 +30,13 @@ class NewsMenuController extends Controller
     public function index()
     {
         $records = $this->NewsMenu->getAll();
-        return view('admins.news_menu.index', compact('records'));
+        return Inertia::render('News_menu/Index', compact('records'));
     }
 
     public function create()
     {
         $menus  = $this->NewsMenu->getNewsMenu();
-        return view('admins.news_menu.create', compact('menus'));
+        return Inertia::render('News_menu/Create', compact('menus'));
     }
     
     /**
@@ -71,7 +72,7 @@ class NewsMenuController extends Controller
     {
         $menus  = $this->NewsMenu->getNewsMenu();
         $NewsMenu = $this->NewsMenu->find($id);
-        return view('admins.news_menu.edit', compact('NewsMenu', 'menus'));
+        return Inertia::render('News_menu/Edit', compact('NewsMenu', 'menus'));
     }
 
     /**
@@ -151,12 +152,12 @@ class NewsMenuController extends Controller
     public function getNewsMenu()
     {
         $NewsMenu = $this->NewsMenu->getNewsMenu();
-        return view('admins.news_menu.NewsMenu_list', compact('NewsMenu'));
+        return Inertia::render('News_menu/NewsMenu_list', compact('NewsMenu'));
     }
 
     public function getSubNewsMenu(Request $request)
     {
         $subNewsMenu = $this->NewsMenu->getSubNewsMenu($request->parent_news_menu_id);
-        return view('admins.news_menu.sub_NewsMenu_list', compact('subNewsMenu'));
+        return Inertia::render('News_menu/sub_NewsMenu_list', compact('subNewsMenu'));
     }
 }

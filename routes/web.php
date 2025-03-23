@@ -53,13 +53,20 @@ Route::middleware('auth')->group(function () {
 
     /* Category */ 
     Route::resource('categories', CategoryController::class);
-    Route::get('categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
     Route::get('categories/status/{id}', [CategoryController::class, 'statusChange'])->name('categories.status');
     Route::get('get-categories', [CategoryController::class,  'getCategory'])->name('category.get');
     Route::get('get-subcategories', [CategoryController::class,  'getSubCategory'])->name('subcategory.get');
     Route::get('categories/mega-menu-status/{id}', [CategoryController::class, 'megaMenustatusChange'])->name('categories.mega_menu_status');
     Route::get('categories/frontend-menu-status/{id}', [CategoryController::class, 'frontendMenustatusChange'])->name('categories.frontend_menu_status');
     Route::get('categories/page-design-status/{id}', [CategoryController::class, 'PageDesignstatusChange'])->name('categories.page_design_status');
+
+    /* News Menu */ 
+    Route::resource('news-menus', NewsMenuController::class);
+    Route::get('news-menus/delete/{id}', [NewsMenuController::class, 'destroy'])->name('news-menus.delete');
+    Route::get('news-menus/status/{id}', [NewsMenuController::class, 'statusChange'])->name('news-menus.status');
+    Route::get('news-menus/mega-menu-status/{id}', [NewsMenuController::class, 'megaMenustatusChange'])->name('news-menus.mega.menu.status');
+    Route::get('get-news-menus', [NewsMenuController::class,  'getNewsMenu'])->name('news-menus.get');
+    Route::get('get-sub-news-menus', [NewsMenuController::class,  'getSubNewsMenu'])->name('sub-news-menus.get');
 });
 
 require __DIR__.'/auth.php';
