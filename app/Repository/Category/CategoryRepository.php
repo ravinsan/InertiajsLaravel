@@ -10,7 +10,7 @@ class CategoryRepository implements CategoryInterface{
 
     public function getAll($data)
     {
-        $query = Category::with(['parent', 'children']);
+        $query = Category::with(['parent', 'children', 'subcategoryNews'])->withCount('subcategoryNews');
 
         $sortColumn = !empty($data['sort_column']) ? $data['sort_column'] : 'id';
         $sortOrder = !empty($data['sort_order']) ? $data['sort_order'] : 'desc';

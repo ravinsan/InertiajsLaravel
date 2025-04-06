@@ -11,6 +11,7 @@ use Illuminate\Support\Arr;
 use App\Mail\ContactUsMail;
 use App\Models\ContactUS;
 use App\Models\User;
+use Inertia\Inertia;
 use Mail;
 use File;
 use Auth;
@@ -26,7 +27,7 @@ class AdminController extends Controller
 
     public function setting()
     {
-        return view('admins.setting.index');
+        return Inertia::render('Setting/Index');
     }
 
     function settingPost(Request $request)
@@ -128,13 +129,13 @@ class AdminController extends Controller
     {
         $data = ContactUS::orderBy('id', 'DESC')->get();
         
-        return view('admins.contactus.index', compact('data'));
+        return Inertia::render('Contactus.Index', compact('data'));
     }
 
     public function contactUsReply($id)
     {
         $data = ContactUS::with('Reply')->find($id);
-        return view('admins.contactus.reply', compact('data','id'));
+        return Inertia::render('Contactus/Reply', compact('data','id'));
     }
 
     public function contactUsReplyPost(Request $request)

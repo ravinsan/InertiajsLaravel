@@ -170,8 +170,8 @@ const Index = ({ auth, records}) => {
                                  onChange={handleMegaMenuStatusFilterChange} 
                              >
                                  <option value="all">All Mega Menu Status</option>
-                                 <option value="1">Enabled</option>
-                                 <option value="0">Disabled</option>
+                                 <option value="1">Verticle</option>
+                                 <option value="0">Horizontal</option>
                              </select>
                          </div>
                      </div>
@@ -269,8 +269,8 @@ const Index = ({ auth, records}) => {
                                                  onClick={() => handleMegaMenuStatus(value.id)}
                                              >
                                                  {value.mega_menu_status
-                                                     ? "Enabled"
-                                                     : "Disabled"}
+                                                     ? "Verticle"
+                                                     : "Horizontal"}
                                              </button>
                                          </td>
      

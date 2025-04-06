@@ -9,6 +9,7 @@ use App\Repository\Region\RegionInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Region;
+use Inertia\Inertia;
 use Hash;
 use Auth;
 
@@ -26,17 +27,19 @@ class RegionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $regions = $this->Region->getAll();
-        return view('admins.regions.index', compact('regions'));
+        $data = $request->all();
+        $data['per_page'] = !empty($data['per_page']) ? $data['per_page'] : config('cms.pagination.perpage');
+        $regions = $this->Region->getAll($data);
+        return Inertia::render('Regions/Index', compact('regions'));
     }
 
     public function create()
     {
         $regions  = $this->Region->getRegion();
         
-        return view('admins.regions.create', compact('regions'));
+        return Inertia::render('Regions/Create', compact('regions'));
     }
     
     /**
@@ -86,7 +89,7 @@ class RegionController extends Controller
             $subparents = [];
         }
         
-        return view('admins.regions.edit', compact('Region', 'regions', 'subparents'));
+        return Inertia::render('Regions/Edit', compact('Region', 'regions', 'subparents'));
     }
 
     /**
@@ -154,13 +157,13 @@ class RegionController extends Controller
     public function getCountry(Request $request)
     {
         $country_list = Region::where('parent_id', $request->region_id)->orderBy('name', 'ASC')->get(['id', 'name']);
-        return view('admins.regions.country_list', compact('country_list'));
+        return Inertia::render('Regions/country_list', compact('country_list'));
     }
 
     public function getState(Request $request)
     {
         $subRegion = Region::where('parent_id', $request->country_region_id)->orderBy('name', 'ASC')->get(['id', 'name']);
-        return view('admins.regions.state_list', compact('subRegion'));
+        return Inertia::render('Regions/state_list', compact('subRegion'));
     }
 
     public function frontendMenustatusChange($id)
